@@ -1,7 +1,11 @@
 library simple_http_extension;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
+class CalculatorEx {
   int addOne(int value) => value + 1;
+}
+
+class HttpEx {
+  Future<dynamic> get(String url) async {
+    return [];
+  }
 }
