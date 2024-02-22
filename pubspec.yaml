@@ -1,6 +1,6 @@
 name: simple_http_extension
 description: "A http helper class that detect remote protocol (max-age) and support local cache."
-version: 0.0.5
+version: 0.0.6
 homepage:
 
 repository: https://github.com/chunta/simple_http_extension.git

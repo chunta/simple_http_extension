@@ -24,6 +24,8 @@ class HttpEx {
   ///
   /// Throws an [Exception] if the HTTP request fails.
   Future<dynamic> get(String url) async {
+     return getImplementation(url);
+     /*
     DateTime now = DateTime.now();
     int currentTimestamp = now.millisecondsSinceEpoch;
 
@@ -44,6 +46,7 @@ class HttpEx {
     _mustRevalidate.remove(url);
 
     return getImplementation(url);
+    */
   }
 
   /// Performs an HTTP GET request to the specified [url] without considering
