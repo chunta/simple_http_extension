@@ -3,10 +3,6 @@ library simple_http_extension;
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
-class CalculatorEx {
-  int addOne(int value) => value + 1;
-}
-
 class HttpEx {
   final logger = Logger();
   final Map<String, int> _expirationTimestamp = {};
@@ -78,12 +74,12 @@ class HttpEx {
         if (response.headers.containsKey('must-revalidate')) {
           _mustRevalidate.add(url);
         }
+        return response.body;
       } else {
         return '${response.statusCode}';
       }
     } catch (e) {
       throw Exception('$e');
     }
-    return [];
   }
 }
