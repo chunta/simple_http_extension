@@ -20,18 +20,13 @@ class HttpEx {
   ///
   /// Throws an [Exception] if the HTTP request fails.
   Future<dynamic> get(String url) async {
-     return getImplementation(url);
-     /*
-    DateTime now = DateTime.now();
-    int currentTimestamp = now.millisecondsSinceEpoch;
-
     if (_mustRevalidate.contains(url) ||
         !_expirationTimestamp.containsKey(url)) {
       return getImplementation(url);
     }
-
+    int nowInSeconds = DateTime.now().millisecondsSinceEpoch;
     if (_expirationTimestamp.containsKey(url) &&
-        _expirationTimestamp[url]! > currentTimestamp) {
+        _expirationTimestamp[url]! > nowInSeconds) {
       logger.d('Find cached data at $url');
       return _localInMemCache[url];
     }
@@ -42,7 +37,6 @@ class HttpEx {
     _mustRevalidate.remove(url);
 
     return getImplementation(url);
-    */
   }
 
   /// Performs an HTTP GET request to the specified [url] without considering
@@ -66,13 +60,22 @@ class HttpEx {
         _expirationTimestamp.remove(url);
         _localInMemCache.remove(url);
         _mustRevalidate.remove(url);
-        if (response.headers.containsKey('max-age')) {
-          int maxAge = int.parse(response.headers['max-age']!);
-          _expirationTimestamp[url] = maxAge;
-          _localInMemCache[url] = response;
-        }
-        if (response.headers.containsKey('must-revalidate')) {
-          _mustRevalidate.add(url);
+        if (response.headers.containsKey('cache-control')) {
+          String cacheControlHeader = response.headers['cache-control']!;
+          RegExp regExp = RegExp(r'max-age=(\d+)');
+          Match? match = regExp.firstMatch(cacheControlHeader);
+          if (match != null) {
+            String maxAgeString = match.group(1)!;
+            int maxAge = int.parse(maxAgeString);
+            _expirationTimestamp[url] =
+                maxAge * 1000 + DateTime.now().millisecondsSinceEpoch;
+            _localInMemCache[url] = response.body;
+          }
+          regExp = RegExp(r'must-revalidate');
+          match = regExp.firstMatch(cacheControlHeader);
+          if (match != null) {
+            _mustRevalidate.add(url);
+          }
         }
         return response.body;
       } else {
