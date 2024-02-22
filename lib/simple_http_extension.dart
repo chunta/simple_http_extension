@@ -59,6 +59,8 @@ class HttpEx {
   }
 
   Future<dynamic> getImplementation(String url) async {
+    logger.d("start getting $url");
+
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
