@@ -3,10 +3,18 @@ library simple_http_extension;
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
+/// A class that extends HTTP functionality with caching and revalidation logic.
 class HttpEx {
+  /// Logger instance for logging messages.
   final logger = Logger();
+
+  /// Map to store the expiration timestamp (in milliseconds since epoch) for cached URLs.
   final Map<String, int> _expirationTimestamp = {};
+
+  /// Map to store the cached responses for URLs.
   final Map<String, dynamic> _localInMemCache = {};
+
+  /// Set to store URLs that require revalidation.
   final Set<String> _mustRevalidate = {};
 
   /// Performs an HTTP GET request to the specified [url].
@@ -51,6 +59,16 @@ class HttpEx {
     return getImplementation(url);
   }
 
+  /// Private method that performs the actual HTTP GET request and handles
+  /// caching logic based on the response headers.
+  ///
+  /// It sends an HTTP GET request to the specified [url] and processes the response.
+  /// If the response status code is 200, it updates the cache with the response
+  /// body and expiration timestamp based on the `max-age` header. It also checks
+  /// for the `must-revalidate` header and adds the URL to the `_mustRevalidate` set
+  /// if present.
+  ///
+  /// Throws an [Exception] if the HTTP request fails.
   Future<dynamic> getImplementation(String url) async {
     logger.d("start getting $url");
 
